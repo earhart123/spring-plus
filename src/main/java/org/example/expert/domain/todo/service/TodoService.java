@@ -17,6 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -48,10 +52,32 @@ public class TodoService {
         );
     }
 
-    public Page<TodoResponse> getTodos(int page, int size) {
+    public Page<TodoResponse> getTodos(int page, int size, String weather, String startDate, String endDate) {
         Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Todo> todos;
 
-        Page<Todo> todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        // 날씨, 수정일 모두 검색
+        if(weather != null && startDate != null && endDate != null){
+            LocalDateTime startOfDay = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            LocalDateTime endOfDay = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE).atTime(23, 59, 59);
+
+            todos = todoRepository.findByWeatherAndModifiedAt(weather, startOfDay, endOfDay, pageable);
+        }
+        // 수정일 검색
+        else if(weather == null && startDate != null && endDate != null){
+            LocalDateTime startOfDay = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            LocalDateTime endOfDay = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE).atTime(23, 59, 59);
+
+            todos = todoRepository.findByModifiedAt(startOfDay, endOfDay, pageable);
+        }
+        // 날짜 검색
+        else if(weather != null){
+            todos = todoRepository.findByWeather(weather, pageable);
+        }
+        // 모두 검색 (검색 조건 없음)
+        else{
+            todos = todoRepository.findAllByOrderByModifiedAtDesc(pageable);
+        }
 
         return todos.map(todo -> new TodoResponse(
                 todo.getId(),
