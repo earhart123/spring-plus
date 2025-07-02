@@ -7,6 +7,7 @@ import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSearchResponse;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
@@ -108,5 +109,26 @@ public class TodoService {
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         );
+    }
+
+    public Page<TodoSearchResponse> searchTodoByTitle(int page, int size, String title) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return todoRepository.findByTitleContains(title, pageable);
+    }
+
+    public Page<TodoSearchResponse> searchTodoByCreateAt(int page, int size, String startDate, String endDate) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        LocalDateTime startOfDay = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE).atTime(23, 59, 59);
+
+        return todoRepository.findByCreatedAt(startOfDay, endOfDay, pageable);
+    }
+
+    public Page<TodoSearchResponse> searchTodoByNickname(int page, int size, String nickname) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return todoRepository.findByNicknameContains(nickname, pageable);
     }
 }

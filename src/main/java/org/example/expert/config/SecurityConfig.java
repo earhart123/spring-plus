@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/signin", "auth/signup").permitAll()
                         .requestMatchers("/todos/**").hasRole(UserRole.USER.name())
+                        .requestMatchers("/admin/**").hasRole(UserRole.ADMIN.name())
                         .requestMatchers("/open").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -6,6 +6,7 @@ import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSearchResponse;
 import org.example.expert.domain.todo.service.TodoService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,33 @@ public class TodoController {
     @GetMapping("/todos/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable long todoId) {
         return ResponseEntity.ok(todoService.getTodo(todoId));
+    }
+
+    @GetMapping("/todos/search-title")
+    public ResponseEntity<Page<TodoSearchResponse>> searchTodoByTitle(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String title
+    ) {
+        return ResponseEntity.ok(todoService.searchTodoByTitle(page, size, title));
+    }
+
+    @GetMapping("/todos/search-date")
+    public ResponseEntity<Page<TodoSearchResponse>> searchTodoByDate(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        return ResponseEntity.ok(todoService.searchTodoByCreateAt(page, size, startDate, endDate));
+    }
+
+    @GetMapping("/todos/search-nickname")
+    public ResponseEntity<Page<TodoSearchResponse>> searchTodoByNickname(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String nickname
+    ) {
+        return ResponseEntity.ok(todoService.searchTodoByNickname(page, size, nickname));
     }
 }
