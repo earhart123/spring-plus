@@ -43,7 +43,7 @@ public class QTodoRepositoryImpl implements QTodoRepository{
     @Override
     public Optional<Todo> findByIdWithUser(Long todoId) {
         return Optional.ofNullable(queryFactory.selectFrom(todo)
-                .leftJoin(todo.user, user)
+                .leftJoin(todo.user, user).fetchJoin()
                 .where(todo.id.eq(todoId))
                 .fetchFirst());
     }
@@ -152,6 +152,7 @@ public class QTodoRepositoryImpl implements QTodoRepository{
                 .from(todo)
                 .leftJoin(todo.managers, manager)
                 .leftJoin(todo.comments, comment)
+                .leftJoin(todo.user, user).fetchJoin()
                 .where(todo.user.nickname.contains(nickname))
                 .groupBy(todo.id)
                 .offset(pageable.getOffset())
