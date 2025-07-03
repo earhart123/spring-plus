@@ -56,6 +56,16 @@ public class TodoService {
         );
     }
 
+    /**
+     * 할 일 검색 (날씨, 수정일)
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param weather 날씨 검색
+     * @param startDate 수정일 검색 기간 시작일
+     * @param endDate 수정일 검색 기간 종료일
+     * @return 페이징된 할 일 목록
+     */
     public Page<TodoResponse> getTodos(int page, int size, String weather, String startDate, String endDate) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Todo> todos;
@@ -94,6 +104,12 @@ public class TodoService {
         ));
     }
 
+    /**
+     * 할 일 id 조회
+     *
+     * @param todoId 할 일 id
+     * @return 검색된 할 일
+     */
     public TodoResponse getTodo(long todoId) {
         Todo todo = todoRepository.findByIdWithUser(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
@@ -111,12 +127,29 @@ public class TodoService {
         );
     }
 
+    /**
+     * 할 일 제목으로 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param title 제목 검색
+     * @return 페이징된 할 일 목록
+     */
     public Page<TodoSearchResponse> searchTodoByTitle(int page, int size, String title) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         return todoRepository.findByTitleContains(title, pageable);
     }
 
+    /**
+     * 할 일 생성일 기간 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param startDate 생성일 검색 기간 시작일
+     * @param endDate 생성일 검색 기간 종료일
+     * @return 페이징된 할 일 목록
+     */
     public Page<TodoSearchResponse> searchTodoByCreateAt(int page, int size, String startDate, String endDate) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -126,6 +159,13 @@ public class TodoService {
         return todoRepository.findByCreatedAt(startOfDay, endOfDay, pageable);
     }
 
+    /**
+     * 할 일 작성자 닉네임 검색
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param nickname 닉네임 검색
+     * @return 페이징된 할 일 목록
+     */
     public Page<TodoSearchResponse> searchTodoByNickname(int page, int size, String nickname) {
         Pageable pageable = PageRequest.of(page - 1, size);
 

@@ -27,6 +27,16 @@ public class TodoController {
         return ResponseEntity.ok(todoService.saveTodo(authUser, todoSaveRequest));
     }
 
+    /**
+     * 할 일 검색 (날씨, 수정일)
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param weather 날씨 검색
+     * @param startDate 수정일 검색 기간 시작일
+     * @param endDate 수정일 검색 기간 종료일
+     * @return 페이징된 할 일 목록
+     */
     @GetMapping("/todos")
     public ResponseEntity<Page<TodoResponse>> getTodos(
             @RequestParam(defaultValue = "1") int page,
@@ -38,11 +48,25 @@ public class TodoController {
         return ResponseEntity.ok(todoService.getTodos(page, size, weather, startDate, endDate));
     }
 
+    /**
+     * 할 일 id 조회
+     *
+     * @param todoId 할 일 id
+     * @return 검색된 할 일
+     */
     @GetMapping("/todos/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable long todoId) {
         return ResponseEntity.ok(todoService.getTodo(todoId));
     }
 
+    /**
+     * 할 일 제목으로 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param title 제목 검색
+     * @return 페이징된 할 일 목록
+     */
     @GetMapping("/todos/search-title")
     public ResponseEntity<Page<TodoSearchResponse>> searchTodoByTitle(
             @RequestParam(defaultValue = "1") int page,
@@ -52,6 +76,15 @@ public class TodoController {
         return ResponseEntity.ok(todoService.searchTodoByTitle(page, size, title));
     }
 
+    /**
+     * 할 일 생성일 기간 조회
+     *
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param startDate 생성일 검색 기간 시작일
+     * @param endDate 생성일 검색 기간 종료일
+     * @return 페이징된 할 일 목록
+     */
     @GetMapping("/todos/search-date")
     public ResponseEntity<Page<TodoSearchResponse>> searchTodoByDate(
             @RequestParam(defaultValue = "1") int page,
@@ -62,6 +95,13 @@ public class TodoController {
         return ResponseEntity.ok(todoService.searchTodoByCreateAt(page, size, startDate, endDate));
     }
 
+    /**
+     * 할 일 작성자 닉네임 검색
+     * @param page 페이지 번호
+     * @param size 한 페이지에 데이터 수
+     * @param nickname 닉네임 검색
+     * @return 페이징된 할 일 목록
+     */
     @GetMapping("/todos/search-nickname")
     public ResponseEntity<Page<TodoSearchResponse>> searchTodoByNickname(
             @RequestParam(defaultValue = "1") int page,

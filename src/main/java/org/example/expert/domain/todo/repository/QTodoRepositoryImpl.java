@@ -26,19 +26,36 @@ public class QTodoRepositoryImpl implements QTodoRepository{
 
     private final JPAQueryFactory queryFactory;
 
-
+    /**
+     * 특정 id를 가진 todo를 user와 같이 조회
+     *
+     * <p>JPQL 예시:
+     * <pre>
+     * SELECT t FROM Todo t
+     * LEFT JOIN FETCH t.user
+     * WHERE t.id = :todoId
+     * </pre>
+     *
+     * @param todoId 조회할 todo id
+     * @return 해당하는 id의 todo, user
+     * 존재하지 않으면 빈 Optional 반환
+     */
     @Override
     public Optional<Todo> findByIdWithUser(Long todoId) {
-//        "SELECT t FROM Todo t "
-//        "LEFT JOIN t.user "
-//        "WHERE t.id = :todoId")
-
         return Optional.ofNullable(queryFactory.selectFrom(todo)
                 .leftJoin(todo.user, user)
                 .where(todo.id.eq(todoId))
                 .fetchFirst());
     }
 
+    /**
+     * 특정 제목이 포함된 할 일 검색
+     * 각 todo의 매니저 수, 댓글 수 포함
+     *
+     * @param title 검색할 todo 제목
+     * @param pageable 페이징 정보
+     * @return 페이징 된 TodoSearchResponse 목록
+     */
     @Override
     public Page<TodoSearchResponse> findByTitleContains(String title, Pageable pageable) {
         QTodo todo = QTodo.todo;
@@ -69,6 +86,15 @@ public class QTodoRepositoryImpl implements QTodoRepository{
         return new PageImpl<>(content, pageable, count == null ? 0 : count);
     }
 
+    /**
+     * 생성일 기간으로 todo 검색
+     * 각 todo의 매니저 수, 댓글 수 포함
+     *
+     * @param start 생성일 기간 시작일
+     * @param end 생성일 기간 종료일
+     * @param pageable 페이징 정보
+     * @return 페이징 된 TodoSearchResponse 목록
+     */
     @Override
     public Page<TodoSearchResponse> findByCreatedAt(LocalDateTime start, LocalDateTime end, Pageable pageable) {
         QTodo todo = QTodo.todo;
@@ -102,6 +128,14 @@ public class QTodoRepositoryImpl implements QTodoRepository{
         return new PageImpl<>(content, pageable, count == null ? 0 : count);
     }
 
+    /**
+     * 작성자 닉네임으로 할 일 검색
+     * 각 todo의 매니저 수, 댓글 수 포함
+     *
+     * @param nickname 검색할 닉네임
+     * @param pageable 페이징 정보
+     * @return 페이징 된 TodoSearchResponse 목록
+     */
     @Override
     public Page<TodoSearchResponse> findByNicknameContains(String nickname, Pageable pageable) {
         QTodo todo = QTodo.todo;
@@ -131,6 +165,4 @@ public class QTodoRepositoryImpl implements QTodoRepository{
 
         return new PageImpl<>(content, pageable, count == null ? 0 : count);
     }
-
-
 }
